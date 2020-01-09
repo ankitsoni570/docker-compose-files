@@ -1,0 +1,32 @@
+version: "2"
+
+services:
+  sonarqube:
+    image: sonarqube:7.9-community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    networks:
+      - sonarnet
+    environment:
+      - sonar.jdbc.url=jdbc:postgresql://db:5432/sonar
+    volumes:
+      - /opt/sonar_data/server_data/sonarqube/logs:/opt/sonarqube/logs
+      - /opt/sonar_data/server_data/sonarqube/data:/opt/sonarqube/data
+      - /opt/sonar_data/server_data/sonarqube/extensions:/opt/sonarqube/extensions
+
+  db:
+    image: postgres:11.4
+    container_name: postgres
+    networks:
+      - sonarnet
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+    volumes:
+      - /opt/sonar_data/server_data/postgres/postgresql:/var/lib/postgresql
+      - /opt/sonar_data/server_data/postgres/postgresql_data:/var/lib/postgresql/data
+
+networks:
+  sonarnet:
+    driver: bridge
